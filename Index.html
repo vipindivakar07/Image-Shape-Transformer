@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Shape Transformer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .upload-section {
+            margin-bottom: 20px;
+        }
+
+        #uploadedImage {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .options {
+            margin-bottom: 20px;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .buttons button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .buttons button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Image Shape Transformer</h1>
+    <div class="upload-section">
+        <input type="file" id="imageUpload" accept="image/*">
+        <div id="uploadedImageContainer" style="display:none;">
+            <img id="uploadedImage" src="" alt="" />
+        </div>
+    </div>
+
+    <div class="options">
+        <label for="shapeSelection">Select Shape:</label>
+        <select id="shapeSelection">
+            <option value="square">Square</option>
+            <option value="circle">Circle</option>
+            <option value="oval">Oval</option>
+            <option value="triangle">Triangle</option>
+            <option value="hexagon">Hexagon</option>
+            <option value="pentagon">Pentagon</option>
+            <option value="star">Star</option>
+            <option value="rounded">Rounded Corners</option>
+        </select>
+    </div>
+
+    <div class="buttons">
+        <button id="applyShape">Apply Shape</button>
+        <button id="resetShape">Reset</button>
+        <button id="downloadImage">Download</button>
+    </div>
+</div>
+
+<script>
+    document.getElementById('imageUpload').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        
+        reader.onload = function(event) {
+            const imgElement = document.getElementById('uploadedImage');
+            imgElement.src = event.target.result;
+            document.getElementById('uploadedImageContainer').style.display = 'block';
+        };
+        
+        reader.readAsDataURL(file);
+    });
+
+    document.getElementById('applyShape').addEventListener('click', function() {
+        const selectedShape = document.getElementById('shapeSelection').value;
+        const imgElement = document.getElementById('uploadedImage');
+        
+        imgElement.style.clipPath = getClipPath(selectedShape);
+    });
+
+    document.getElementById('resetShape').addEventListener('click', function() {
+        const imgElement = document.getElementById('uploadedImage');
+        imgElement.style.clipPath = 'none';
+        document.getElementById('shapeSelection').value = 'square';
+    });
+
+    document.getElementById('downloadImage').addEventListener('click', function() {
+        const imgElement = document.getElementById('uploadedImage');
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = imgElement.naturalWidth;
+        canvas.height = imgElement.naturalHeight;
+        
+        ctx.drawImage(imgElement, 0, 0);
+        
+        const dataUrl = canvas.toDataURL();
+        
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = 'transformed-image.png';
+        link.click();
+    });
+
+    function getClipPath(shape) {
+        switch (shape) {
+            case 'square':
+                return 'none';
+            case 'circle':
+                return 'circle(50%)';
+            case 'oval':
+                return 'ellipse(50% 30%)';
+            case 'triangle':
+                return 'polygon(50% 0%, 0% 100%, 100% 100%)';
+            case 'hexagon':
+                return 'polygon(50% 0%, 0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%)';
+            case 'pentagon':
+                return 'polygon(50% 0%, 0% 38%, 19% 100%, 81% 100%, 100% 38%)';
+            case 'star':
+                return 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)';
+            case 'rounded':
+                return 'border-radius: 15px';
+            default:
+                return 'none';
+        }
+    }
+</script>
+
+</body>
+</html>
